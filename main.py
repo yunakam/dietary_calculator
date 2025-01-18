@@ -50,9 +50,9 @@ class Result(ft.Column):
         if hint or info:
             self.info_icon = ft.IconButton(
                 expand=True,
-                icon=ft.icons.INFO_OUTLINED, 
+                icon=ft.Icons.INFO_OUTLINED, 
                 icon_size=13,
-                icon_color=ft.colors.GREY,
+                icon_color=ft.Colors.GREY,
                 style=ft.ButtonStyle(padding=0),
                 alignment=ft.Alignment(-1.0, -0.5),
             )
@@ -120,7 +120,7 @@ class ResultUpper(Result):
         super().__init__(text, suffix_text, description, hint, info)
                 
         # self.name.width=100
-        self.name.content.controls[0].content=ft.Icon(name=icon, color=ft.colors.LIME, size=20)
+        self.name.content.controls[0].content=ft.Icon(name=icon, color=ft.Colors.LIME, size=20)
                 
         self.result.border_width=2
 
@@ -231,8 +231,8 @@ class DietaryCalculator(ft.Column):
             )
         )   
         
-        self.bmr = ResultUpper("BMR", "kcal/day", ft.icons.ENERGY_SAVINGS_LEAF_OUTLINED, "Calories used when body is completely at rest", "Basal metabolic rate\n by Mifflin-St Jeor equation", "Info for BMR")
-        self.tdee = ResultUpper("TDEE", "kcal/day", ft.icons.ENERGY_SAVINGS_LEAF, "Calories needed to maintain the current weight", "Total daily energy expenditure")
+        self.bmr = ResultUpper("BMR", "kcal/day", ft.Icons.ENERGY_SAVINGS_LEAF_OUTLINED, "Calories used when body is completely at rest", "Basal metabolic rate\n by Mifflin-St Jeor equation", "Info for BMR")
+        self.tdee = ResultUpper("TDEE", "kcal/day", ft.Icons.ENERGY_SAVINGS_LEAF, "Calories needed to maintain the current weight", "Total daily energy expenditure")
 
 
         # ResultLower - DRI: Dietary reference intake
@@ -245,9 +245,9 @@ class DietaryCalculator(ft.Column):
         self.vitaminC = ResultLower("Vitamin C", " mg/day", None, "based on Vitamin Calculator:\nhttps://www.omnicalculator.com/health/vitamin")
         self.vitaminD = ResultLower("Vitamin D", " μg/day", None, "based on Vitamin Calculator:\nhttps://www.omnicalculator.com/health/vitamin")
         self.vitaminE = ResultLower("Vitamin E", " mg/day", None, "based on Vitamin Calculator:\nhttps://www.omnicalculator.com/health/vitamin")
-        self.calcium = ResultLowerNotAvailable("Calcium", " mg/day")
-        self.iron = ResultLowerNotAvailable("Iron", " mg/day")
-        self.magnesium = ResultLowerNotAvailable("Magnesium", " mg/day")
+        self.calcium = ResultLower("Calcium", " mg/day", None, "based on National Institutes of Health:\nhttps://ods.od.nih.gov/factsheets/Calcium-Consumer/")
+        self.iron = ResultLower("Iron", " mg/day", None, "based on National Institutes of Health:\nhttps://ods.od.nih.gov/factsheets/Iron-Consumer/")
+        self.magnesium = ResultLower("Mangesium", " mg/day", None, "based on National Institutes of Health:\nhttps://ods.od.nih.gov/factsheets/Magnesium-Consumer/")
 
         self.dri = ft.ExpansionTile(
             title=ft.Text(
@@ -294,15 +294,15 @@ class DietaryCalculator(ft.Column):
                                 begin=ft.Alignment(0, -0.6),
                                 end=ft.alignment.bottom_center,
                                 colors=[
-                                    # ft.colors.ORANGE_300,
-                                    # ft.colors.ORANGE_200,
-                                    # ft.colors.ORANGE_100,
-                                    # ft.colors.ORANGE_50,
-                                    ft.colors.LIME_300,
-                                    ft.colors.LIME_200,
-                                    ft.colors.LIME_100,
-                                    ft.colors.LIME_50,
-                                    ft.colors.WHITE,                                    
+                                    # ft.Colors.ORANGE_300,
+                                    # ft.Colors.ORANGE_200,
+                                    # ft.Colors.ORANGE_100,
+                                    # ft.Colors.ORANGE_50,
+                                    ft.Colors.LIME_300,
+                                    ft.Colors.LIME_200,
+                                    ft.Colors.LIME_100,
+                                    ft.Colors.LIME_50,
+                                    ft.Colors.WHITE,                                    
                                 ],
                             ),                          
                             content=ft.Column(
@@ -320,21 +320,15 @@ class DietaryCalculator(ft.Column):
                                         ]
                                     ),
                                     ft.Row(
-                                        spacing=10,
+                                        wrap=True,
+                                        spacing=0,
                                         vertical_alignment=ft.CrossAxisAlignment.END,
                                         controls = [
-                                            ft.Column(
-                                                spacing=3,
-                                                controls=[                                    
-                                                    self.pal,
-                                                    ft.Text(
-                                                        "   * PAL is needed to calculate TDEE",
-                                                        size=12,
-                                                        )                                        
-                                                ]
-                                            ),
-                                            
-
+                                            self.pal,
+                                            ft.Text(
+                                                "   * PAL is used to calculate TDEE",
+                                                size=10,
+                                                ),                                         
                                         ]
                                     ),                                    
                                 ]
@@ -376,6 +370,9 @@ class DietaryCalculator(ft.Column):
         self.calc_fiber(bmr)
         self.calc_fat(bmr)
         self.calc_vitamin(age, sex)
+        self.calc_calcium(age,sex)
+        self.calc_iron(age,sex)
+        self.calc_magnesium(age,sex)
         
         self.page.update()
         
@@ -472,6 +469,65 @@ class DietaryCalculator(ft.Column):
                     
         self.vitaminC.result.value = amount
         
+    def calc_calcium(self, age, sex):
+        if age <= 1:
+            amount = 260
+        elif age <= 3:
+            amount = 700
+        elif age <= 8:
+            amount = 1000
+        elif age <= 18:
+            amount = 1300
+        elif age <= 50:
+            amount = 1000
+        elif age <= 70:
+            if sex == "Female":
+                amount = 1200
+            else: amount = 1000
+        else:
+            amount = 1200
+        
+        self.calcium.result.value = amount
+
+    def calc_iron(self, age, sex):
+        if age <= 1:
+            amount = 11
+        elif age <= 3:
+            amount = 7
+        elif age <= 8:
+            amount = 10
+        elif age <= 18:
+            if sex == "Female":
+                amount = 15
+            else: amount = 11
+        elif age <= 50:
+            if sex == "Female":
+                amount = 18
+            else: amount = 8
+        else:
+            amount = 8
+        
+        self.iron.result.value = amount
+
+    def calc_magnesium(self, age, sex):
+        if age <= 1:
+            amount = 75
+        elif age <= 3:
+            amount = 8
+        elif age <= 8:
+            amount = 130
+        elif age <= 18:
+            if sex == "Female":
+                amount = "360"
+            else: amount = "410"
+        elif sex == "Female":
+            amount = "310–320"
+        else:
+            amount = "400–420"
+        
+        self.magnesium.result.value = amount
+        
+                        
     # Check if all the input values are valid
     def valueEntered(self, key):
         self.hasValue[key] = True

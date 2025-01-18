@@ -1,9 +1,7 @@
-# A bmr_calculator Flet app
-
-An example of a minimal Flet app.
+# A bmr_calculator
 
 To run the app:
 
 ```
-flet run [app_directory]
+flet run dietary_calculator
 ```
